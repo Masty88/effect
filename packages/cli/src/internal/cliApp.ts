@@ -159,7 +159,18 @@ const handleBuiltInOption = <R, E, A>(
 > => {
   switch (builtIn._tag) {
     case "SetLogLevel": {
+      console.log("\n========== ACTUAL TEST ==========")
+      console.log("executable:", executable)
+      console.log("Has spaces in paths?", executable.includes("Program Files") || executable.includes("Program Files (x86)"))
+
       const nextArgs = executable.split(/\s+/)
+      console.log("After split:", nextArgs.length, "elements")
+      console.log("  [0]:", nextArgs[0])
+      console.log("  [1]:", nextArgs[1])
+      if (nextArgs.length > 2) {
+        console.log("  [2]:", nextArgs[2], "← PROBLEM: should only have 2 elements!")
+      }
+
       // Filter out the log level option before re-executing the command
       for (let i = 0; i < args.length; i++) {
         if (isLogLevelArg(args[i]) || isLogLevelArg(args[i - 1])) {
@@ -167,6 +178,11 @@ const handleBuiltInOption = <R, E, A>(
         }
         nextArgs.push(args[i])
       }
+
+      console.log("Final nextArgs length:", nextArgs.length)
+      console.log("Expected: 2 (runtime+script) + filtered args")
+      console.log("========== END TEST ==========\n")
+
       return run(self, nextArgs, execute).pipe(
         Logger.withMinimumLogLevel(builtIn.level)
       )
